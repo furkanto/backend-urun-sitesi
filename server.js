@@ -110,4 +110,29 @@ app.get("/api/banners", async (req, res) => {
 
 // -------------------- BANNER UPDATE (UPLOAD + VERİ KAYIT) --------------------
 app.post("/api/banners/update", upload.single("banner"), async (req, res) => {
-  const field = req.body.field; // slid
+
+  try {
+    const field = req.body.field; // slider1, slider2, slider3, women, men, kids
+    const filePath = "/uploads/" + req.file.filename;
+
+    let banner = await Banner.findOne();
+
+    if (!banner) {
+      banner = new Banner({});
+    }
+
+    banner[field] = filePath;
+    await banner.save();
+
+    res.json({ success: true, url: filePath });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Sunucu hatası" });
+  }
+
+});
+
+
+// -------------------- SUNUCU --------------------
+app.listen(5000, () => console.log("Backend çalışıyor (5000)"));
